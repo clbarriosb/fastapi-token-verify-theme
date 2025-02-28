@@ -28,6 +28,8 @@ db = client.optionsTrading
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
 
+
+
 @app.middleware("http")
 async def add_db_to_request(request, call_next):
     request.state.db = db

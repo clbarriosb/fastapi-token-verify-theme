@@ -166,7 +166,7 @@ async def verify_token(request: Request, authorization: Optional[str] = Header(N
             )
         except jwt.JWTError:
             raise HTTPException(
-                status_code=401,
+                status_code=401, 
                 detail="Invalid token"
             )
             
