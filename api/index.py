@@ -21,9 +21,9 @@ app.add_middleware(
 )
 
 # MongoDB connection
-MONGODB_URL = os.getenv("MONGODB_URL")
-client = AsyncIOMotorClient(MONGODB_URL)
-db = client.optionsTrading
+# MONGODB_URL = os.getenv("MONGODB_URL")
+# client = AsyncIOMotorClient(MONGODB_URL)
+# db = client.optionsTrading
 
 # Include routers
 # app.include_router(auth.router, prefix="/api/auth")
@@ -52,20 +52,20 @@ db = client.optionsTrading
 async def read_root():
     return {"message": "Welcome to FastAPI with MongoDB"}
 
-# Example endpoint to get items
-@app.get("/items")
-async def get_items():
-    try:
-        items = await db.items.find().to_list(1000)
-        return {"items": items}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# # Example endpoint to get items
+# @app.get("/items")
+# async def get_items():
+#     try:
+#         items = await db.items.find().to_list(1000)
+#         return {"items": items}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
-# Example endpoint to create an item
-@app.post("/items")
-async def create_item(item: dict):
-    try:
-        result = await db.items.insert_one(item)
-        return {"id": str(result.inserted_id)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+# # Example endpoint to create an item
+# @app.post("/items")
+# async def create_item(item: dict):
+#     try:
+#         result = await db.items.insert_one(item)
+#         return {"id": str(result.inserted_id)}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e)) 
