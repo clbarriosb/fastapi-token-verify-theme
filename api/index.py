@@ -36,17 +36,17 @@ async def add_db_to_request(request, call_next):
     response = await call_next(request)
     return response
 
-async def init_db():
-    try:
-        existing_collections = await db.list_collection_names()
-        if "OptionsTrading" not in existing_collections:
-            await db.create_collection("traders")
-            print("Created OptionsTrading collection")
-    except Exception as e:
-        print(f"Error creating collection: {str(e)}")
+# async def init_db():
+#     try:
+#         existing_collections = await db.list_collection_names()
+#         if "OptionsTrading" not in existing_collections:
+#             await db.create_collection("traders")
+#             print("Created OptionsTrading collection")
+#     except Exception as e:
+#         print(f"Error creating collection: {str(e)}")
 
 # Run the initialization
-asyncio.create_task(init_db())
+# asyncio.create_task(init_db())
 
 @app.get("/")
 async def read_root():
