@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Request, Header, Depends
-from fastapi.security import OAuth2PasswordRequestForm
-from ..models.trader import TraderCreate, Trader
-from bson import ObjectId
+# from fastapi.security import OAuth2PasswordRequestForm
+# from ..models.trader import TraderCreate, Trader
+# from bson import ObjectId
 # from passlib.context import CryptContext
 # import jwt
-import os
-from pydantic import BaseModel
-from typing import Optional
+# import os
+# from pydantic import BaseModel
+# from typing import Optional
 
 router = APIRouter()
 

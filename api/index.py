@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from .routes import auth
-import asyncio
-import os
+# from .routes import auth
+# import asyncio
+# import os
 
 # Load environment variables
 load_dotenv()
