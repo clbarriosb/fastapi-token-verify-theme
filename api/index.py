@@ -26,24 +26,24 @@ client = AsyncIOMotorClient(MONGODB_URL)
 db = client.optionsTrading
 
 # Include routers
-app.include_router(auth.router, prefix="/api/auth")
+# app.include_router(auth.router, prefix="/api/auth")
 
 
 
-@app.middleware("http")
-async def add_db_to_request(request, call_next):
-    request.state.db = db
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def add_db_to_request(request, call_next):
+#     request.state.db = db
+#     response = await call_next(request)
+#     return response
 
-async def init_db():
-    try:
-        existing_collections = await db.list_collection_names()
-        if "OptionsTrading" not in existing_collections:
-            await db.create_collection("traders")
-            print("Created OptionsTrading collection")
-    except Exception as e:
-        print(f"Error creating collection: {str(e)}")
+# async def init_db():
+#     try:
+#         existing_collections = await db.list_collection_names()
+#         if "OptionsTrading" not in existing_collections:
+#             await db.create_collection("traders")
+#             print("Created OptionsTrading collection")
+#     except Exception as e:
+#         print(f"Error creating collection: {str(e)}")
 
 # Run the initialization
 # asyncio.create_task(init_db())
