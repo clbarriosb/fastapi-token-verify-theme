@@ -46,7 +46,7 @@ async def init_db():
         print(f"Error creating collection: {str(e)}")
 
 # Run the initialization
-asyncio.create_task(init_db())
+# asyncio.create_task(init_db())
 
 @app.get("/")
 async def read_root():
