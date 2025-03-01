@@ -3,7 +3,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .routes import auth
-import asyncio
 import os
 
 # Load environment variables
@@ -28,8 +27,6 @@ db = client.optionsTrading
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
 
-
-
 @app.middleware("http")
 async def add_db_to_request(request, call_next):
     request.state.db = db
@@ -48,8 +45,6 @@ async def add_db_to_request(request, call_next):
 # Run the initialization
 # asyncio.create_task(init_db())
 # loop = asyncio.new_event_loop()
-asyncio.set_event_loop(asyncio.new_event_loop())
-
 
 @app.get("/")
 async def read_root():
