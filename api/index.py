@@ -25,11 +25,20 @@ app.add_middleware(
 )
 
 # MongoDB connection
-MONGODB_URL = os.getenv("MONGODB_URL")
-client = AsyncIOMotorClient(MONGODB_URL)
+
 # db = client.optionsTrading
-db = client.get_database("optionsTrading")
-traders = db.get_collection("traders")
+
+async def get_database(collection_name: str):
+    try:
+        MONGODB_URL = os.getenv("MONGODB_URL")
+        client = AsyncIOMotorClient(MONGODB_URL)
+        db = client.get_database("optionsTrading")
+        collection = db.get_collection(collection_name)
+        return collection
+    except Exception as e:
+        print(f"Database connection error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
@@ -62,14 +71,15 @@ async def read_root():
 async def get_items():
     try:
         # Get count of traders collection
-        global traders
-        count = await traders.count_documents({})
+        trader_collection = await get_database("traders")
+        count = await trader_collection.count_documents({})
         print(count)
         # Or get all traders
         return {"total_traders": count}
         # return {"message": "Hello World"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 # Example endpoint to create an item
 @app.post("/items")
