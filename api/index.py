@@ -58,11 +58,12 @@ async def read_root():
 async def get_items():
     try:
         # Get count of traders collection
-        count = await db.traders.count_documents({})
-        print(count)
-        # Or get all traders
-        traders = await db.traders.find().to_list(1000)
-        return {"total_traders": count}
+        # count = await db.traders.count_documents({})
+        # print(count)
+        # # Or get all traders
+        # traders = await db.traders.find().to_list(1000)
+        # return {"total_traders": count}
+        return {"message": "Hello World"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
