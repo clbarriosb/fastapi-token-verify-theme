@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException, Request, Header, Depends
 from ..models.trader import TraderCreate, Trader
 from bson import ObjectId
 from passlib.context import CryptContext # type: ignore
-# import jwt
-# import os
-# from pydantic import BaseModel
-# from typing import Optional
+import jwt # type: ignore
+import os
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter()
 
@@ -64,119 +64,119 @@ async def create_trader(trader: TraderCreate, request: Request):
 
 
 # didn't test this
-# class SignInRequest(BaseModel):
-#     email: str
-#     password: str
+class SignInRequest(BaseModel):
+    email: str
+    password: str
 
-# @router.post("/signin")
-# async def signin(request: Request, credentials: SignInRequest):
-#     try:
-#         # Find trader by email
-#         trader = await request.state.db.traders.find_one({"email": credentials.email})
+@router.post("/signin")
+async def signin(request: Request, credentials: SignInRequest):
+    try:
+        # Find trader by email
+        trader = await request.state.db.traders.find_one({"email": credentials.email})
         
-#         if not trader:
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Incorrect email or password"
-#             )
+        if not trader:
+            raise HTTPException(
+                status_code=401,
+                detail="Incorrect email or password"
+            )
 
-#         # Check if password exists in trader document
-#         if 'password' not in trader:
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="No password set for this account"
-#             )
+        # Check if password exists in trader document
+        if 'password' not in trader:
+            raise HTTPException(
+                status_code=401,
+                detail="No password set for this account"
+            )
 
-#         try:
-#             print("verifying password")
-#             # Verify password with explicit error handling
-#             is_valid = pwd_context.verify(credentials.password, trader['password'])
-#             if not is_valid:
-#                 raise HTTPException(
-#                     status_code=401,
-#                     detail="Incorrect email or password"
-#                 )
-#             print("password verified" , is_valid)
-#         except Exception as password_error:
-#             print(f"Password verification error: {str(password_error)}")
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Password verification failed"
-#             )
+        try:
+            print("verifying password")
+            # Verify password with explicit error handling
+            is_valid = pwd_context.verify(credentials.password, trader['password'])
+            if not is_valid:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Incorrect email or password"
+                )
+            print("password verified" , is_valid)
+        except Exception as password_error:
+            print(f"Password verification error: {str(password_error)}")
+            raise HTTPException(
+                status_code=401,
+                detail="Password verification failed"
+            )
             
-#         # Create JWT token
-#         auth_token = jwt.encode(
-#             {
-#                 "email": trader['email'],
-#                 "user_id": str(trader['_id'])
-#             },
-#             os.getenv("SECRET"),
-#             algorithm="HS256"
-#         )
-#         print("auth_token" , auth_token)
-#         return {
-#             "authToken": auth_token,
-#             "user": {
-#                 "email": trader['email'],
-#                 "user_id": str(trader['_id'])
-#             }
-#         }
+        # Create JWT token
+        auth_token = jwt.encode(
+            {
+                "email": trader['email'],
+                "user_id": str(trader['_id'])
+            },
+            os.getenv("SECRET"),
+            algorithm="HS256"
+        )
+        print("auth_token" , auth_token)
+        return {
+            "authToken": auth_token,
+            "user": {
+                "email": trader['email'],
+                "user_id": str(trader['_id'])
+            }
+        }
         
-#     except Exception as e:
-#         print(f"Signin error: {str(e)}")
-#         raise HTTPException(status_code=401, detail=str(e))
+    except Exception as e:
+        print(f"Signin error: {str(e)}")
+        raise HTTPException(status_code=401, detail=str(e))
 
 
-# @router.post("/verify")
-# async def verify_token(request: Request, authorization: Optional[str] = Header(None)):
-#     print("verifying token😊")
-#     try:
-#         if not authorization:
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Authorization header missing"
-#             )
+@router.post("/verify")
+async def verify_token(request: Request, authorization: Optional[str] = Header(None)):
+    print("verifying token😊")
+    try:
+        if not authorization:
+            raise HTTPException(
+                status_code=401,
+                detail="Authorization header missing"
+            )
         
-#         token = authorization.replace("Bearer ", "")
+        token = authorization.replace("Bearer ", "")
         
-#         try:
-#             # Verify and decode the JWT token
-#             payload = jwt.decode(
-#                 token,
-#                 os.getenv("SECRET"),
-#                 algorithms=["HS256"]
-#             )
+        try:
+            # Verify and decode the JWT token
+            payload = jwt.decode(
+                token,
+                os.getenv("SECRET"),
+                algorithms=["HS256"]
+            )
             
-#             # Find trader by email from token
-#             trader = await request.state.db.traders.find_one({"email": payload["email"]})
+            # Find trader by email from token
+            trader = await request.state.db.traders.find_one({"email": payload["email"]})
             
-#             if not trader:
-#                 raise HTTPException(
-#                     status_code=401,
-#                     detail="Invalid token"
-#                 )
+            if not trader:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid token"
+                )
                 
-#             return {
-#                 "valid": True,
-#                 "user": {
-#                     "email": trader["email"],
-#                     "user_id": str(trader["_id"])
-#                 }
-#             }
+            return {
+                "valid": True,
+                "user": {
+                    "email": trader["email"],
+                    "user_id": str(trader["_id"])
+                }
+            }
             
-#         except jwt.ExpiredSignatureError:
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Token has expired"
-#             )
-#         except jwt.JWTError:
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Invalid token"
-#             )
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=401,
+                detail="Token has expired"
+            )
+        except jwt.JWTError:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
             
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=401,
-#             detail=str(e)
-#         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=401,
+            detail=str(e)
+        )
