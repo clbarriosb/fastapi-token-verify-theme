@@ -71,6 +71,7 @@ class SignInRequest(BaseModel):
 @router.post("/signin")
 async def signin(request: Request, credentials: SignInRequest):
     try:
+        print("signing in")
         # Find trader by email
         trader = await request.state.db.traders.find_one({"email": credentials.email})
         
