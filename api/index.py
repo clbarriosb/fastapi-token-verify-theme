@@ -47,6 +47,9 @@ async def add_db_to_request(request, call_next):
 
 # Run the initialization
 # asyncio.create_task(init_db())
+# loop = asyncio.new_event_loop()
+asyncio.set_event_loop(asyncio.new_event_loop())
+
 
 @app.get("/")
 async def read_root():
