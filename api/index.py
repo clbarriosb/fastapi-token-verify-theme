@@ -55,23 +55,23 @@ async def read_root():
 
 # Example endpoint to get items
 @app.get("/items")
-async def get_items():
+async def get_items(request):
     try:
         # Get count of traders collection
-        # count = await db.traders.count_documents({})
-        # print(count)
-        # # Or get all traders
-        # traders = await db.traders.find().to_list(1000)
-        # return {"total_traders": count}
-        return {"message": "Hello World"}
+        count = await request.state.db.traders.count_documents({})
+        print(count)
+        # Or get all traders
+        traders = await db.traders.find().to_list(1000)
+        return {"total_traders": count}
+        # return {"message": "Hello World"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # Example endpoint to create an item
 @app.post("/items")
-async def create_item(item: dict):
+async def create_item(item: dict, request):
     try:
-        result = await db.items.insert_one(item)
+        result = await request.state.db.items.insert_one(item)
         return {"id": str(result.inserted_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
