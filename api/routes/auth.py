@@ -13,9 +13,14 @@ router = APIRouter()
 # Add this near the top with other initializations
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+@router.get("/autha")
+async def root():
+    return {"messagea": "Hello World"}
+
 @router.post("/signup", response_model=dict)
 async def create_trader(trader: TraderCreate, request: Request):
     try:
+        print("creating trader")
         # Check if trader exists
         existing_trader = await request.state.db.traders.find_one({"email": trader.email})
         
