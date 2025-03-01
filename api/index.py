@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .routes import auth
+from mangum import Mangum
 import os
 import platform
 import asyncio
@@ -59,6 +60,7 @@ async def get_items():
     try:
         # Get count of traders collection
         count = await db.traders.count_documents({})
+        print(count)
         # Or get all traders
         traders = await db.traders.find().to_list(1000)
         return {"total_traders": count}
@@ -72,4 +74,7 @@ async def create_item(item: dict):
         result = await db.items.insert_one(item)
         return {"id": str(result.inserted_id)}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Handler for Vercel
+handler = Mangum(app) 
