@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Request, Header, Depends
 # from fastapi.security import OAuth2PasswordRequestForm
-# from ..models.trader import TraderCreate, Trader
-# from bson import ObjectId
-# from passlib.context import CryptContext
+from ..models.trader import TraderCreate, Trader
+from bson import ObjectId
+from passlib.context import CryptContext # type: ignore
 # import jwt
 # import os
 # from pydantic import BaseModel
@@ -11,40 +11,40 @@ from fastapi import APIRouter, HTTPException, Request, Header, Depends
 router = APIRouter()
 
 # Add this near the top with other initializations
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# @router.post("/signup", response_model=dict)
-# async def create_trader(trader: TraderCreate, request: Request):
-#     try:
-#         # Check if trader exists
-#         existing_trader = await request.state.db.traders.find_one({"email": trader.email})
+@router.post("/signup", response_model=dict)
+async def create_trader(trader: TraderCreate, request: Request):
+    try:
+        # Check if trader exists
+        existing_trader = await request.state.db.traders.find_one({"email": trader.email})
         
-#         if existing_trader:
-#             # If trader exists but has no password (e.g., Google signup)
-#             if 'password' not in existing_trader or not existing_trader['password']:
-#                 # Update with new password
-#                 hashed_password = pwd_context.hash(trader.password)
-#                 await request.state.db.traders.update_one(
-#                     {"email": trader.email},
-#                     {"$set": {"password": hashed_password}}
-#                 )
-#                 return {"id": str(existing_trader['_id']), "message": "Password updated"}
-#             else:
-#                 # If trader exists with password, prevent registration
-#                 raise HTTPException(
-#                     status_code=400,
-#                     detail="Email already registered"
-#                 )
+        if existing_trader:
+            # If trader exists but has no password (e.g., Google signup)
+            if 'password' not in existing_trader or not existing_trader['password']:
+                # Update with new password
+                hashed_password = pwd_context.hash(trader.password)
+                await request.state.db.traders.update_one(
+                    {"email": trader.email},
+                    {"$set": {"password": hashed_password}}
+                )
+                return {"id": str(existing_trader['_id']), "message": "Password updated"}
+            else:
+                # If trader exists with password, prevent registration
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email already registered"
+                )
         
-#         # Create new trader if doesn't exist
-#         trader_dict = trader.model_dump()
-#         trader_dict["password"] = pwd_context.hash(trader_dict["password"])
-#         trader_dict["user_id"] = str(ObjectId())
-#         result = await request.state.db.traders.insert_one(trader_dict)
-#         return {"id": str(result.inserted_id)}
+        # Create new trader if doesn't exist
+        trader_dict = trader.model_dump()
+        trader_dict["password"] = pwd_context.hash(trader_dict["password"])
+        trader_dict["user_id"] = str(ObjectId())
+        result = await request.state.db.traders.insert_one(trader_dict)
+        return {"id": str(result.inserted_id)}
         
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
