@@ -25,16 +25,18 @@ app.add_middleware(
 # MongoDB connection
 MONGODB_URL = os.getenv("MONGODB_URL")
 client = AsyncIOMotorClient(MONGODB_URL)
-db = client.optionsTrading
+# db = client.optionsTrading
+db = client.get_database("optionsTrading")
+traders = db.get_collection("traders")
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
 
-@app.middleware("http")
-async def add_db_to_request(request, call_next):
-    request.state.db = db
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def add_db_to_request(request, call_next):
+#     request.state.db = db
+#     response = await call_next(request)
+#     return response
 
 # async def init_db():
 #     try:
@@ -58,10 +60,10 @@ async def read_root():
 async def get_items(request):
     try:
         # Get count of traders collection
-        count = await request.state.db.traders.count_documents({})
+        count = await traders.count_documents({})
         print(count)
         # Or get all traders
-        traders = await db.traders.find().to_list(1000)
+        traders = await traders.find().to_list(1000)
         return {"total_traders": count}
         # return {"message": "Hello World"}
     except Exception as e:
