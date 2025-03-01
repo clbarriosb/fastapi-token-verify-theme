@@ -8,6 +8,8 @@ import platform
 import asyncio
 if platform.system()=='Windows':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+else:
+    asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 # Load environment variables
 load_dotenv()
 
@@ -24,7 +26,10 @@ app.add_middleware(
 
 # MongoDB connection
 MONGODB_URL = os.getenv("MONGODB_URL")
-
+client = AsyncIOMotorClient(MONGODB_URL)
+# db = client.optionsTrading
+db = client.get_database("optionsTrading")
+traders = db.get_collection("traders")
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
@@ -57,14 +62,10 @@ async def read_root():
 async def get_items():
     try:
         # Get count of traders collection
-        client = AsyncIOMotorClient(MONGODB_URL)
-        # db = client.optionsTrading
-        db = client.get_database("optionsTrading")
-        traders = db.get_collection("traders")
+        global traders
         count = await traders.count_documents({})
         print(count)
         # Or get all traders
-        traders = await traders.find().to_list(1000)
         return {"total_traders": count}
         # return {"message": "Hello World"}
     except Exception as e:
