@@ -4,7 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .routes import auth
 import os
-
+import platform
+import asyncio
+if platform.system()=='Windows':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 # Load environment variables
 load_dotenv()
 
