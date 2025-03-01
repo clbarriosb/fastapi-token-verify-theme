@@ -6,10 +6,13 @@ from .routes import auth
 import os
 import platform
 import asyncio
-if platform.system()=='Windows':
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-else:
-    asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
+from .database import get_database
+
+
+# if platform.system()=='Windows':
+#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# else:
+#     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 # Load environment variables
 load_dotenv()
 
@@ -27,17 +30,6 @@ app.add_middleware(
 # MongoDB connection
 
 # db = client.optionsTrading
-
-async def get_database(collection_name: str):
-    try:
-        MONGODB_URL = os.getenv("MONGODB_URL")
-        client = AsyncIOMotorClient(MONGODB_URL)
-        db = client.get_database("optionsTrading")
-        collection = db.get_collection(collection_name)
-        return collection
-    except Exception as e:
-        print(f"Database connection error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Database connection failed")
 
 
 # Include routers

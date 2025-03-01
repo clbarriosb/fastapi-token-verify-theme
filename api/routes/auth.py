@@ -7,7 +7,7 @@ import jwt # type: ignore
 import os
 from pydantic import BaseModel
 from typing import Optional
-from ..index import get_database
+from  ..database import get_database
 
 router = APIRouter()
 
