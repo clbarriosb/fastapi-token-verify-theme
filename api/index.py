@@ -30,11 +30,11 @@ app.include_router(auth.router, prefix="/api/auth")
 
 
 
-@app.middleware("http")
-async def add_db_to_request(request, call_next):
-    request.state.db = db
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def add_db_to_request(request, call_next):
+#     request.state.db = db
+#     response = await call_next(request)
+#     return response
 
 # async def init_db():
 #     try:
