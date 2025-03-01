@@ -24,10 +24,7 @@ app.add_middleware(
 
 # MongoDB connection
 MONGODB_URL = os.getenv("MONGODB_URL")
-client = AsyncIOMotorClient(MONGODB_URL)
-# db = client.optionsTrading
-db = client.get_database("optionsTrading")
-traders = db.get_collection("traders")
+
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth")
@@ -60,7 +57,10 @@ async def read_root():
 async def get_items():
     try:
         # Get count of traders collection
-        global traders
+        client = AsyncIOMotorClient(MONGODB_URL)
+        # db = client.optionsTrading
+        db = client.get_database("optionsTrading")
+        traders = db.get_collection("traders")
         count = await traders.count_documents({})
         print(count)
         # Or get all traders
