@@ -3,7 +3,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .routes import auth
-from mangum import Mangum
 import os
 import platform
 import asyncio
@@ -75,6 +74,3 @@ async def create_item(item: dict):
         return {"id": str(result.inserted_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Handler for Vercel
-handler = Mangum(app) 
