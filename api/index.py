@@ -60,6 +60,7 @@ async def read_root():
 async def get_items():
     try:
         # Get count of traders collection
+        global traders
         count = await traders.count_documents({})
         print(count)
         # Or get all traders
@@ -73,6 +74,7 @@ async def get_items():
 @app.post("/items")
 async def create_item(item: dict):
     try:
+        global traders
         result = await traders.insert_one(item)
         return {"id": str(result.inserted_id)}
     except Exception as e:
