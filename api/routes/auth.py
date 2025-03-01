@@ -7,6 +7,7 @@ import jwt # type: ignore
 import os
 from pydantic import BaseModel
 from typing import Optional
+from ..index import get_database
 
 router = APIRouter()
 
@@ -20,16 +21,16 @@ async def root():
 @router.post("/signup", response_model=dict)
 async def create_trader(trader: TraderCreate, request: Request):
     try:
-        print("creating trader")
+        trader_collection = await get_database("traders")
         # Check if trader exists
-        existing_trader = await request.state.db.traders.find_one({"email": trader.email})
+        existing_trader = await trader_collection.find_one({"email": trader.email})
         
         if existing_trader:
             # If trader exists but has no password (e.g., Google signup)
             if 'password' not in existing_trader or not existing_trader['password']:
                 # Update with new password
                 hashed_password = pwd_context.hash(trader.password)
-                await request.state.db.traders.update_one(
+                await trader_collection.update_one(
                     {"email": trader.email},
                     {"$set": {"password": hashed_password}}
                 )
@@ -45,7 +46,7 @@ async def create_trader(trader: TraderCreate, request: Request):
         trader_dict = trader.model_dump()
         trader_dict["password"] = pwd_context.hash(trader_dict["password"])
         trader_dict["user_id"] = str(ObjectId())
-        result = await request.state.db.traders.insert_one(trader_dict)
+        result = await trader_collection.insert_one(trader_dict)
         return {"id": str(result.inserted_id)}
         
     except Exception as e:
@@ -62,7 +63,6 @@ async def create_trader(trader: TraderCreate, request: Request):
 #         raise HTTPException(status_code=500, detail=str(e)) 
 
 
-
 # didn't test this
 class SignInRequest(BaseModel):
     email: str
@@ -71,9 +71,9 @@ class SignInRequest(BaseModel):
 @router.post("/signin")
 async def signin(request: Request, credentials: SignInRequest):
     try:
-        print("signing in")
+        trader_collection = await get_database("traders")
         # Find trader by email
-        trader = await request.state.db.traders.find_one({"email": credentials.email})
+        trader = await trader_collection.find_one({"email": credentials.email})
         
         if not trader:
             raise HTTPException(
@@ -130,8 +130,8 @@ async def signin(request: Request, credentials: SignInRequest):
 
 @router.post("/verify")
 async def verify_token(request: Request, authorization: Optional[str] = Header(None)):
-    print("verifying token😊")
     try:
+        trader_collection = await get_database("traders")
         if not authorization:
             raise HTTPException(
                 status_code=401,
@@ -149,7 +149,7 @@ async def verify_token(request: Request, authorization: Optional[str] = Header(N
             )
             
             # Find trader by email from token
-            trader = await request.state.db.traders.find_one({"email": payload["email"]})
+            trader = await trader_collection.find_one({"email": payload["email"]})
             
             if not trader:
                 raise HTTPException(
